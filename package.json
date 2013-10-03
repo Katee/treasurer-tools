@@ -1,0 +1,17 @@
+{
+  "name": "treasurer-tools",
+  "description": "Helpful tools for doing treasurer duties at Hacklab.to",
+  "version": "0.0.1",
+  "author": {
+    "name": "Kate Murphy",
+    "email": "hello@kate.io"
+  },
+  "engines": ["node >= 0.8.0"],
+  "main": "app.js",
+  "dependencies": {
+    "underscore": "1.5.2",
+    "q": "0.9.7",
+    "nodemailer": "0.5.3",
+    "email-templates": "0.1.0"
+  }
+}
