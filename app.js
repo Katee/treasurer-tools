@@ -17,8 +17,8 @@ var transport = nodemailer.createTransport("SMTP", {
   }
 });
 
-var sendReminderEmail = function(email, userInformation) {
-  sendEmail(email, userInformation, 'Hacklab Dues Reminder', 'reminder');
+var sendReminderEmail = function(email, userInformation, paymentsInformation) {
+  sendEmail(email, {user: userInformation, payments: paymentsInformation}, 'Hacklab Dues Reminder', 'reminder');
 };
 
 var sendPaymentReceiptEmail = function(email, userInformation, paymentInformation) {
