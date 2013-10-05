@@ -6,8 +6,8 @@ var sendReminderEmail = function(email, userInformation, paymentsInformation, op
   sendEmail(email, {user: userInformation, payments: paymentsInformation}, 'Hacklab Dues Reminder', 'reminder', options);
 };
 
-var sendReceiptEmail = function(email, userInformation, paymentInformation, options) {
-  sendEmail(email, {user: userInformation, payment: paymentInformation}, 'Hacklab Dues Receipt', 'receipt', options);
+var sendReceiptEmail = function(email, userInformation, paymentInformation, payments, options) {
+  sendEmail(email, {user: userInformation, payment: paymentInformation, payments: payments}, 'Hacklab Dues Receipt', 'receipt', options);
 };
 
 module.exports.sendReminderEmail = sendReminderEmail;

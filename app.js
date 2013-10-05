@@ -53,7 +53,8 @@ process.stdin.on('data', function (text) {
         emailer.sendReminderEmail('hello@kate.io', user, [payment], options);
         break;
       case "receipt":
-        emailer.sendReceiptEmail('hello@kate.io', user, payment, options);
+        var filteredPayments = filterPayments(name);
+        emailer.sendReceiptEmail('hello@kate.io', user, _.last(filteredPayments), filteredPayments, options);
         break;
       default:
         console.log("No email type '%s' known.", emailType);

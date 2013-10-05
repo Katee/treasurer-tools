@@ -1,6 +1,11 @@
 <p>Hi <%= user.name %>,</p>
 
-<p>Hacklab received your payment of <%= payment.amount %> by <%= payment.method %><br />
+<p>Hacklab received your payment of <%= payment.amount %> by <%= payment.type %><br />
 Your next due date is: <strong><%= user.nextDuedate %></strong></p>
+
+<p>Your payments on file are:</p>
+<ul>
+<% payments.forEach(function(payment){ %><li><%= payment.date %> of <%= payment.amount %></li><% }) %>
+</ul>
 
 <p>Thank you for making Hacklab more awesome!</p>
