@@ -77,9 +77,18 @@ function loadPayments() {
       var payment = {
         date: values[0],
         who: values[1],
-        amount: values[2] || values[3] || values[4] || values[5]
-        // TODO: include payment type
+        amount: values[2] || values[3] || values[4] || values[5],
+        notes: values[6]
       };
+      if (values[2].length > 0) {
+        payment.type = "cash";
+      } else if (values[3].length > 0) {
+        payment.type = "cheque";
+      } else if (values[4].length > 0) {
+        payment.type = "interac";
+      } else if (values[5].length > 0) {
+        payment.type = "paypal";
+      }
       payments.push(payment);
     });
   });
