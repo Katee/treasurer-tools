@@ -21,7 +21,7 @@ console.log('Welcome to Treasurer tools');
 payments = loadPayments();
 
 process.stdin.on('data', function (text) {
-  var emailCommandRegex = /^email (reminder|reciept|.+) ([a-z]+)/;
+  var emailCommandRegex = /^email (reminder|receipt|.+) ([a-zA-Z ]+)/;
   if (text.match(/^quit|^exit/)) {
     console.log('Bye.');
     process.exit();
@@ -60,6 +60,8 @@ process.stdin.on('data', function (text) {
         console.log("No email type '%s' known.", emailType);
         break;
     }
+  } else {
+    console.log("No command found that matches");
   }
 });
 
