@@ -107,6 +107,6 @@ function filterPayments(person) {
 
 function prettyPrintPayments(payments) {
   return _.map(payments, function(payment){
-    return [payment.date, payment.who, payment.amount].join(', ');
+    return payment.date + ": " + payment.who + " paid " + payment.amount + " by " + payment.type;
   }).join('\n');
 }
