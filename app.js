@@ -28,6 +28,8 @@ payments = loadPayments();
 
 process.stdin.on('data', function (text) {
   var emailCommandRegex = /^email (reminder|receipt|.+) ([a-zA-Z ]+)/;
+  var paymentRegex = /^payment (add) (".+") (\$[0-9]+\.[0-9]{2}) (cash|cheque|interac|paypal)/;
+
   if (text.match(/^quit|^exit/)) {
     console.log('Bye.');
     process.exit();
@@ -37,6 +39,22 @@ process.stdin.on('data', function (text) {
     // reload the payment data
     payments = loadPayments();
     console.log('payments loaded');
+  } else if (text.match(paymentRegex)) {
+    // single payment command lets you add a payment
+    var matches = text.match(paymentRegex);
+    var command = matches[1];
+    if (command == 'add') {
+      var payment = {
+        who: matches[2],
+        amount: matches[3],
+        type: matches[4],
+        date: (new Date()).format(options.date_format)
+      };
+      payments.push(payment);
+      console.log("Adding payment: %s", prettyPrintPayment(payment));
+    } else {
+      console.log(prettyPrintPayments(payments));
+    }
   } else if (text.match(/^payments/)) {
     // find payments based on a name, or print all if no name specified
     var matches = text.match(/^payments (.+)/);
