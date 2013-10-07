@@ -10,6 +10,7 @@ var options = _.extend({
   date_format: "YYYY-MM-DD",
   email_templates_dir: path.join(__dirname, 'emails'),
   payments_file: path.join(__dirname, 'data', 'payments.csv'),
+  users_file: path.join(__dirname, 'data', 'users.csv'),
   email_log: path.join(__dirname, 'data', 'emails.log')
 }, require(path.join(path.dirname(module.filename), 'options')));
 
@@ -18,13 +19,17 @@ var email_log = fs.createWriteStream(options.email_log, {'flags': 'a'});
 var emailer = require(path.join(path.dirname(module.filename), 'emailer'));
 
 var payments = [];
+var users = [];
 
 process.stdin.resume();
 process.stdin.setEncoding('utf8');
 
 console.log('Welcome to Treasurer tools');
-// automatically load the payment data
+// automatically load the payments and users on start
 payments = loadPayments();
+loadUsers().then(function(value){
+  users = value;
+});
 
 process.stdin.on('data', function (text) {
   var emailCommandRegex = /^email (reminder|receipt|.+) ([a-zA-Z ]+)/;
@@ -33,6 +38,8 @@ process.stdin.on('data', function (text) {
   if (text.match(/^quit|^exit/)) {
     console.log('Bye.');
     process.exit();
+  } else if (text.match(/^users/)) {
+    console.log(users);
   } else if (text.match(/^user/)) {
     console.log(user);
   } else if (text.match(/^reload/)) {
@@ -126,6 +133,30 @@ function loadPayments() {
   });
 
   return payments;
+}
+
+function loadUsers() {
+  var deferred = Q.defer();
+
+  Q.nfcall(fs.readFile, options.users_file, 'utf8').then(function(data){
+    var lines = data.split('\n');
+    var users = _.map(lines.slice(1), function(line){
+      var values = line.split(',');
+      var user = {
+        name: values[0],
+        nick: values[1],
+        email: values[2],
+        note: values[3]
+      };
+      return user;
+    });
+    deferred.resolve(users);
+    return users;
+  }).catch(function(error) {
+    console.log(error);
+  }).done();
+
+  return deferred.promise;
 }
 
 function filterPayments(person) {
