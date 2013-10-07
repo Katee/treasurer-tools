@@ -2,18 +2,18 @@ var Q = require('q');
 var nodemailer = require("nodemailer");
 var emailTemplates = require('email-templates');
 
-var sendReminderEmail = function(email, userInformation, paymentsInformation, options) {
-  sendEmail(email, {user: userInformation, payments: paymentsInformation}, 'Hacklab Dues Reminder', 'reminder', options);
+var sendReminderEmail = function(email, userInformation, paymentsInformation, options, callback) {
+  sendEmail(email, {user: userInformation, payments: paymentsInformation}, 'Hacklab Dues Reminder', 'reminder', options, callback);
 };
 
-var sendReceiptEmail = function(email, userInformation, paymentInformation, payments, options) {
-  sendEmail(email, {user: userInformation, payment: paymentInformation, payments: payments}, 'Hacklab Dues Receipt', 'receipt', options);
+var sendReceiptEmail = function(email, userInformation, paymentInformation, payments, options, callback) {
+  sendEmail(email, {user: userInformation, payment: paymentInformation, payments: payments}, 'Hacklab Dues Receipt', 'receipt', options, callback);
 };
 
 module.exports.sendReminderEmail = sendReminderEmail;
 module.exports.sendReceiptEmail = sendReceiptEmail;
 
-function sendEmail(email, templateData, subject, templateName, options) {
+function sendEmail(email, templateData, subject, templateName, options, callback) {
   var transport = makeTransport(options);
 
   Q.nfcall(emailTemplates, options.email_templates_dir).then(function(template){
@@ -31,6 +31,8 @@ function sendEmail(email, templateData, subject, templateName, options) {
   }).then(function(){
     console.log('%s sent to %s', subject, email);
     transport.close();
+  }).then(function(){
+    if (callback) callback(null, subject, email);
   }, function(err){
     console.log(err);
   }).done();

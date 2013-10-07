@@ -2,12 +2,16 @@ var path = require('path');
 var Q = require('q');
 var _ = require('underscore');
 var util = require('util');
+var fs = require('fs');
 
 // put your options in options.js to override these defaults
 var options = _.extend({
   email_templates_dir: path.join(__dirname, 'emails'),
-  payments_file: path.join(__dirname, 'csv', 'payments.csv')
+  payments_file: path.join(__dirname, 'csv', 'payments.csv'),
+  email_log: path.join(__dirname, 'csv', 'emails.log')
 }, require(path.join(path.dirname(module.filename), 'options')));
+
+var email_log = fs.createWriteStream(options.email_log, {'flags': 'a'});
 
 var emailer = require(path.join(path.dirname(module.filename), 'emailer'));
 
@@ -50,11 +54,16 @@ process.stdin.on('data', function (text) {
     var name = matches[2];
     switch(emailType) {
       case "reminder":
-        emailer.sendReminderEmail('hello@kate.io', user, [payment], options);
+        var filteredPayments = filterPayments(name);
+        emailer.sendReminderEmail('hello@kate.io', user, _.last(filteredPayments), options, function(error, subject, email){
+          email_log.write((new Date).getTime() + " email reminder sent to " + email + '\n');
+        });
         break;
       case "receipt":
         var filteredPayments = filterPayments(name);
-        emailer.sendReceiptEmail('hello@kate.io', user, _.last(filteredPayments), filteredPayments, options);
+        emailer.sendReceiptEmail('hello@kate.io', user, _.last(filteredPayments), filteredPayments, options, function(error, subject, email){
+          email_log.write((new Date).getTime() + " email reminder sent to " + email + '\n');
+        });
         break;
       default:
         console.log("No email type '%s' known.", emailType);
