@@ -11,3 +11,4 @@ A collection of tools to help me be lazy and still get done my tasks as treasure
 ## Usage
 
 Move options.sample.js to options.js and edit the options to include your gmail details.
+Move csv-sample to csv and fill in your payments as needed.
