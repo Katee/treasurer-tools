@@ -5,6 +5,11 @@ var util = require('util');
 var fs = require('fs');
 require('date-format-lite');
 
+var emailer = require(path.join(path.dirname(module.filename), 'emailer'));
+var models = require(path.join(path.dirname(module.filename), 'models'));
+var Payment = models.Payment;
+var User = models.User;
+
 // put your options in options.js to override these defaults
 var options = _.extend({
   date_format: "YYYY-MM-DD",
@@ -16,17 +21,8 @@ var options = _.extend({
 
 var email_log = fs.createWriteStream(options.email_log, {'flags': 'a'});
 
-var emailer = require(path.join(path.dirname(module.filename), 'emailer'));
-
-var models = require(path.join(path.dirname(module.filename), 'models'));
-var Payment = models.Payment;
-var User = models.User;
-
 var payments = [];
 var users = [];
-
-process.stdin.resume();
-process.stdin.setEncoding('utf8');
 
 console.log('Welcome to Treasurer tools');
 // automatically load the payments and users on start
@@ -36,6 +32,9 @@ loadPayments().then(function(value){
 loadUsers().then(function(value){
   users = value;
 });
+
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
 
 process.stdin.on('data', function (text) {
   var emailCommandRegex = /^email (reminder|receipt|.+) ([a-zA-Z ]+)/;
