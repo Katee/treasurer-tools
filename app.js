@@ -18,6 +18,10 @@ var email_log = fs.createWriteStream(options.email_log, {'flags': 'a'});
 
 var emailer = require(path.join(path.dirname(module.filename), 'emailer'));
 
+var models = require(path.join(path.dirname(module.filename), 'models'));
+var Payment = models.Payment;
+var User = models.User;
+
 var payments = [];
 var users = [];
 
@@ -41,7 +45,7 @@ process.stdin.on('data', function (text) {
     console.log('Bye.');
     process.exit();
   } else if (text.match(/^users/)) {
-    console.log(users);
+    console.log(prettyPrint(users));
   } else if (text.match(/^user/)) {
     console.log(user);
   } else if (text.match(/^reload/)) {
@@ -53,16 +57,11 @@ process.stdin.on('data', function (text) {
     var matches = text.match(paymentRegex);
     var command = matches[1];
     if (command == 'add') {
-      var payment = {
-        who: matches[2],
-        amount: matches[3],
-        type: matches[4],
-        date: (new Date()).format(options.date_format)
-      };
+      var payment = new Payment(matches[2], matches[3], matches[4], (new Date()).format(options.date_format));
       payments.push(payment);
-      console.log("Adding payment: %s", prettyPrintPayment(payment));
+      console.log("Adding payment: %s", payment);
     } else {
-      console.log(prettyPrintPayments(payments));
+      console.log(prettyPrint(payments));
     }
   } else if (text.match(/^payments/)) {
     // find payments based on a name, or print all if no name specified
@@ -70,12 +69,12 @@ process.stdin.on('data', function (text) {
     if (matches) {
       var filteredPayments = filterPayments(matches[1]);
       if (filteredPayments.length > 0) {
-        console.log(prettyPrintPayments(filteredPayments));
+        console.log(prettyPrint(filteredPayments));
       } else {
         console.log("No payments found that match '%s'", matches[1]);
       }
     } else {
-      console.log(prettyPrintPayments(payments));
+      console.log(prettyPrint(payments));
     }
   } else if (text.match(emailCommandRegex)) {
     matches = text.match(emailCommandRegex);
@@ -123,12 +122,7 @@ function loadPayments() {
   return loadFromCSV(options.payments_file, function(line){
     var values = line.split(',');
     if (values == undefined || values.length <= 1 || values[0] == null || values[0].length == 0) {return;}
-    var payment = {
-      date: values[0],
-      who: values[1],
-      amount: values[2] || values[3] || values[4] || values[5],
-      notes: values[6]
-    };
+    var payment = new Payment(values[1], values[0], values[2] || values[3] || values[4] || values[5], values[6]);
     if (values[2].length > 0) {
       payment.type = "cash";
     } else if (values[3].length > 0) {
@@ -146,13 +140,7 @@ function loadUsers() {
   return loadFromCSV(options.users_file, function(line){
     var values = line.split(',');
     if (values == undefined || values.length <= 1 || values[0] == null || values[0].length == 0) {return;}
-    var user = {
-      name: values[0],
-      nick: values[1],
-      email: values[2],
-      note: values[3]
-    };
-    return user;
+    return new User(values[0], values[1], values[2], values[3]);
   });
 }
 
@@ -162,10 +150,6 @@ function filterPayments(person) {
   });
 }
 
-function prettyPrintPayments(payments) {
-  return _.map(payments, prettyPrintPayment).join('\n');
-}
-
-function prettyPrintPayment(payment) {
-  return payment.date + ": " + payment.who + " paid " + payment.amount + " by " + payment.type;
+function prettyPrint(arr) {
+  return _.map(arr, function(el){return el.toString();}).join('\n');
 }
