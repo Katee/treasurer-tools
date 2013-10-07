@@ -3,9 +3,11 @@ var Q = require('q');
 var _ = require('underscore');
 var util = require('util');
 var fs = require('fs');
+require('date-format-lite');
 
 // put your options in options.js to override these defaults
 var options = _.extend({
+  date_format: "YYYY-MM-DD",
   email_templates_dir: path.join(__dirname, 'emails'),
   payments_file: path.join(__dirname, 'csv', 'payments.csv'),
   email_log: path.join(__dirname, 'csv', 'emails.log')
