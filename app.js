@@ -26,7 +26,9 @@ process.stdin.setEncoding('utf8');
 
 console.log('Welcome to Treasurer tools');
 // automatically load the payments and users on start
-payments = loadPayments();
+loadPayments().then(function(value){
+  payments = value;
+});
 loadUsers().then(function(value){
   users = value;
 });
@@ -101,62 +103,55 @@ process.stdin.on('data', function (text) {
   }
 });
 
-function loadPayments() {
-  var fs = require('fs');
-  payments = [];
-
-  fs.readFile(options.payments_file, 'utf8', function (err, data) {
-    if (err) throw err;
-    var lines = data.split('\n');
-    _.each(lines.slice(1), function(line){
-      var values = line.split(',');
-      if (values.length <= 1) return;
-      var tags = values[2].split('|');
-      if (values[0] == null || values[0].length == 0) {return;}
-      var payment = {
-        date: values[0],
-        who: values[1],
-        amount: values[2] || values[3] || values[4] || values[5],
-        notes: values[6]
-      };
-      if (values[2].length > 0) {
-        payment.type = "cash";
-      } else if (values[3].length > 0) {
-        payment.type = "cheque";
-      } else if (values[4].length > 0) {
-        payment.type = "interac";
-      } else if (values[5].length > 0) {
-        payment.type = "paypal";
-      }
-      payments.push(payment);
-    });
-  });
-
-  return payments;
-}
-
-function loadUsers() {
+function loadFromCSV(file, lineMethod) {
   var deferred = Q.defer();
 
-  Q.nfcall(fs.readFile, options.users_file, 'utf8').then(function(data){
+  Q.nfcall(fs.readFile, file, 'utf8').then(function(data){
     var lines = data.split('\n');
-    var users = _.map(lines.slice(1), function(line){
-      var values = line.split(',');
-      var user = {
-        name: values[0],
-        nick: values[1],
-        email: values[2],
-        note: values[3]
-      };
-      return user;
-    });
-    deferred.resolve(users);
-    return users;
+    var payments = _.chain(lines.slice(1)).map(lineMethod).compact().value();
+    deferred.resolve(payments);
   }).catch(function(error) {
     console.log(error);
   }).done();
 
   return deferred.promise;
+}
+
+function loadPayments() {
+  return loadFromCSV(options.payments_file, function(line){
+    var values = line.split(',');
+    if (values == undefined || values.length <= 1 || values[0] == null || values[0].length == 0) {return;}
+    var payment = {
+      date: values[0],
+      who: values[1],
+      amount: values[2] || values[3] || values[4] || values[5],
+      notes: values[6]
+    };
+    if (values[2].length > 0) {
+      payment.type = "cash";
+    } else if (values[3].length > 0) {
+      payment.type = "cheque";
+    } else if (values[4].length > 0) {
+      payment.type = "interac";
+    } else if (values[5].length > 0) {
+      payment.type = "paypal";
+    }
+    return payment;
+  });
+}
+
+function loadUsers() {
+  return loadFromCSV(options.users_file, function(line){
+    var values = line.split(',');
+    if (values == undefined || values.length <= 1 || values[0] == null || values[0].length == 0) {return;}
+    var user = {
+      name: values[0],
+      nick: values[1],
+      email: values[2],
+      note: values[3]
+    };
+    return user;
+  });
 }
 
 function filterPayments(person) {
