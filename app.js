@@ -9,8 +9,8 @@ require('date-format-lite');
 var options = _.extend({
   date_format: "YYYY-MM-DD",
   email_templates_dir: path.join(__dirname, 'emails'),
-  payments_file: path.join(__dirname, 'csv', 'payments.csv'),
-  email_log: path.join(__dirname, 'csv', 'emails.log')
+  payments_file: path.join(__dirname, 'data', 'payments.csv'),
+  email_log: path.join(__dirname, 'data', 'emails.log')
 }, require(path.join(path.dirname(module.filename), 'options')));
 
 var email_log = fs.createWriteStream(options.email_log, {'flags': 'a'});
