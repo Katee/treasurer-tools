@@ -37,71 +37,113 @@ process.stdin.resume();
 process.stdin.setEncoding('utf8');
 
 process.stdin.on('data', function (text) {
-  var emailCommandRegex = /^email (reminder|receipt|.+) ([a-zA-Z ]+)/;
-  var paymentRegex = /^payment (add) (".+") (\$[0-9]+\.[0-9]{2}) (cash|cheque|interac|paypal)/;
+  var commandRegex = /^([a-z]+)([a-zA-Z0-9 $."]*)/;
+  var command = text.match(commandRegex);
+  var restOfCommand = command[2].trim();
 
-  if (text.match(/^quit|^exit/)) {
+  switch(command[1]) {
+  case "users":
+    handleCommandUsers(restOfCommand);
+    break;
+  case "payment":
+    handleCommandPayment(restOfCommand);
+    break;
+  case "payments":
+    handleCommandPayments(restOfCommand);
+    break;
+  case "email":
+    handleCommandEmail(restOfCommand);
+    break;
+  case "quit":
+  case "exit":
     console.log('Bye.');
     process.exit();
-  } else if (text.match(/^users/)) {
-    console.log(prettyPrint(users));
-  } else if (text.match(/^user/)) {
-    console.log(user);
-  } else if (text.match(/^reload/)) {
-    // reload the payment data
-    payments = loadPayments();
-    console.log('payments loaded');
-  } else if (text.match(paymentRegex)) {
-    // single payment command lets you add a payment
-    var matches = text.match(paymentRegex);
-    var command = matches[1];
-    if (command == 'add') {
-      var payment = new Payment(matches[2], matches[3], matches[4], (new Date()).format(options.date_format));
-      payments.push(payment);
-      console.log("Adding payment: %s", payment);
-    } else {
-      console.log(prettyPrint(payments));
-    }
-  } else if (text.match(/^payments/)) {
-    // find payments based on a name, or print all if no name specified
-    var matches = text.match(/^payments (.+)/);
-    if (matches) {
-      var filteredPayments = filterPayments(matches[1]);
-      if (filteredPayments.length > 0) {
-        console.log(prettyPrint(filteredPayments));
-      } else {
-        console.log("No payments found that match '%s'", matches[1]);
-      }
-    } else {
-      console.log(prettyPrint(payments));
-    }
-  } else if (text.match(emailCommandRegex)) {
-    matches = text.match(emailCommandRegex);
-    var emailType = matches[1];
-    var name = matches[2];
-    var user = _.find(users, function(user){
-      return user.name.match(name);
-    });
-    var filteredPayments = filterPayments(name);
-    switch(emailType) {
-      case "reminder":
-        emailer.sendReminderEmail(user.email, user, filteredPayments, options, function(error, subject, email){
-          email_log.write((new Date).getTime() + " email reminder sent to " + email + '\n');
-        });
-        break;
-      case "receipt":
-        emailer.sendReceiptEmail(user.email, user, _.last(filteredPayments), filteredPayments, options, function(error, subject, email){
-          email_log.write((new Date).getTime() + " email reminder sent to " + email + '\n');
-        });
-        break;
-      default:
-        console.log("No email type '%s' known.", emailType);
-        break;
-    }
-  } else {
+    break;
+  default:
     console.log("No command found that matches");
+    break;
   }
 });
+
+// show all or a filtered set of users
+function handleCommandUsers(filter) {
+  if (filter) {
+    var filteredUsers = filterUsers(filter);
+    if (filteredUsers.length > 0) {
+      console.log(prettyPrint(filteredUsers));
+    } else {
+      console.log("No users found that match '%s'", filter);
+    }
+  } else {
+    console.log(prettyPrint(users));
+  }
+}
+
+// single payment command lets you add a payment
+function handleCommandPayment(command) {
+  console.log('command: "%s"', command);
+  var paymentRegex = /^(add) (".+") (\$[0-9]+\.[0-9]{2}) (cash|cheque|interac|paypal)/;
+  var matches = command.match(paymentRegex);
+  if (matches) {
+    var action = matches[1];
+
+    var name = matches[2];
+    var amount = matches[3];
+    var method = matches[4];
+    var date = (new Date()).format(options.date_format);
+    var notes = null;
+
+    var payment = new Payment(name, date, amount, method, notes);
+    payments.push(payment);
+    console.log("Adding payment: %s", payment);
+  } else {
+    console.log(prettyPrint(payments));
+  }
+}
+
+// find payments based on a name, or print all if no name specified
+function handleCommandPayments(filter) {
+  if (filter) {
+    var filteredPayments = filterPayments(filter);
+    if (filteredPayments.length > 0) {
+      console.log(prettyPrint(filteredPayments));
+    } else {
+      console.log("No payments found that match '%s'", filter);
+    }
+  } else {
+    console.log(prettyPrint(payments));
+  }
+}
+
+// find user and send email
+function handleCommandEmail(command) {
+  var emailCommandRegex = /^(reminder|receipt|.+) ([a-zA-Z ]+)/;
+  matches = command.match(emailCommandRegex);
+  if (!matches) {
+    return console.log("Not a valid email command.");
+  }
+  var emailType = matches[1];
+  var name = matches[2];
+  var user = _.find(users, function(user){
+    return user.name.match(name);
+  });
+  var filteredPayments = filterPayments(name);
+  switch(emailType) {
+    case "reminder":
+      emailer.sendReminderEmail(user.email, user, filteredPayments, options, function(error, subject, email){
+        email_log.write((new Date).getTime() + " email reminder sent to " + email + '\n');
+      });
+      break;
+    case "receipt":
+      emailer.sendReceiptEmail(user.email, user, _.last(filteredPayments), filteredPayments, options, function(error, subject, email){
+        email_log.write((new Date).getTime() + " email reminder sent to " + email + '\n');
+      });
+      break;
+    default:
+      console.log("No email type '%s' known.", emailType);
+      break;
+  }
+}
 
 function loadFromCSV(file, lineMethod) {
   var deferred = Q.defer();
@@ -143,9 +185,15 @@ function loadUsers() {
   });
 }
 
-function filterPayments(person) {
+function filterPayments(filter) {
   return _.filter(payments, function(payment) {
-    return payment.who.toLowerCase().match(person.toLowerCase());
+    return payment.who.toLowerCase().match(filter.toLowerCase());
+  });
+}
+
+function filterUsers(filter) {
+  return _.filter(users, function(user) {
+    return user.toString().toLowerCase().match(filter.toLowerCase());
   });
 }
 

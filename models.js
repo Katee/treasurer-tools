@@ -12,10 +12,11 @@ User.prototype.toString = function() {
   return [this.name, this.nick, this.email, this.notes].join(', ');
 };
 
-function Payment(who, date, amount, notes) {
+function Payment(who, date, amount, type, notes) {
   this.who = who;
   this.date = date;
   this.amount = amount;
+  this.type = type;
   this.notes = notes;
 }
 
