@@ -81,16 +81,18 @@ process.stdin.on('data', function (text) {
     matches = text.match(emailCommandRegex);
     var emailType = matches[1];
     var name = matches[2];
+    var user = _.find(users, function(user){
+      return user.name.match(name);
+    });
+    var filteredPayments = filterPayments(name);
     switch(emailType) {
       case "reminder":
-        var filteredPayments = filterPayments(name);
-        emailer.sendReminderEmail('hello@kate.io', user, _.last(filteredPayments), options, function(error, subject, email){
+        emailer.sendReminderEmail(user.email, user, filteredPayments, options, function(error, subject, email){
           email_log.write((new Date).getTime() + " email reminder sent to " + email + '\n');
         });
         break;
       case "receipt":
-        var filteredPayments = filterPayments(name);
-        emailer.sendReceiptEmail('hello@kate.io', user, _.last(filteredPayments), filteredPayments, options, function(error, subject, email){
+        emailer.sendReceiptEmail(user.email, user, _.last(filteredPayments), filteredPayments, options, function(error, subject, email){
           email_log.write((new Date).getTime() + " email reminder sent to " + email + '\n');
         });
         break;
