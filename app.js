@@ -32,11 +32,16 @@ loadPayments().then(function(value){
 loadUsers().then(function(value){
   users = value;
 });
+startRepl();
 
-process.stdin.resume();
-process.stdin.setEncoding('utf8');
+function startRepl() {
+  process.stdin.resume();
+  process.stdin.setEncoding('utf8');
 
-process.stdin.on('data', function (text) {
+  process.stdin.on('data', dispatchCommand);
+}
+
+function dispatchCommand(text) {
   var commandRegex = /^([a-z]+)([a-zA-Z0-9 $."']*)/;
   var command = text.match(commandRegex);
   var restOfCommand = command[2].trim();
@@ -63,7 +68,7 @@ process.stdin.on('data', function (text) {
     console.log("No command found that matches");
     break;
   }
-});
+}
 
 // show all or a filtered set of users
 function handleCommandUsers(filter) {
