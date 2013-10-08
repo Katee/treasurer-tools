@@ -126,7 +126,7 @@ function handleCommandPayments(filter) {
     var filteredPayments = filterPayments(filter);
     if (filteredPayments.length > 0) {
       console.log(prettyPrint(filteredPayments));
-      console.log('%s payments, total value: $%s', filteredPayments.length, _.reduce(filteredPayments, function(m,p){return m + Number(p.value());}, 0).toFixed(2));
+      console.log('%s payments, total value: $%s', filteredPayments.length, _.reduce(filteredPayments, function(m,p){return m + Number(p.amount);}, 0).toFixed(2));
     } else {
       console.log("No payments found that match '%s'", filter);
     }
