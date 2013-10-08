@@ -24,6 +24,7 @@ module.exports.dispatchCommand = dispatchCommand;
 module.exports.loadData = loadData;
 
 var email_log = fs.createWriteStream(options.email_log, {'flags': 'a'});
+var payments_log = fs.createWriteStream(options.payments_file, {'flags': 'a'});
 
 var payments = [];
 var users = [];
@@ -112,7 +113,8 @@ function handleCommandPayment(command) {
 
     var payment = new Payment(name, date, amount, method, notes);
     payments.push(payment);
-    console.log("Adding payment: %s", payment);
+    payments_log.write(payment.serialize() + '\n');
+    console.log("Added payment: %s", payment);
   } else {
     console.log("Not sure about : '%s'", command);
   }
