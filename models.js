@@ -42,7 +42,7 @@ Payment.prototype.value = function() {
 };
 
 Payment.prototype.toString = function() {
-  return this.date + ": " + this.who + " paid " + this.amount.toFixed(2) + " by " + this.type;
+  return this.date + ": " + this.who + " paid $" + this.amount.toFixed(2) + " by " + this.type + " " + (this.notes || '');
 };
 
 Payment.prototype.serialize = function() {
