@@ -120,7 +120,8 @@ function handleCommandEmail(command) {
   var emailCommandRegex = /^(reminder|receipt|.+) ([a-zA-Z ]+)/;
   matches = command.match(emailCommandRegex);
   if (!matches) {
-    return console.log("Not a valid email command.");
+    console.log("Not a valid email command.");
+    return;
   }
   var emailType = matches[1];
   var name = matches[2];
