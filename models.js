@@ -1,3 +1,5 @@
+var _ = require('underscore');
+
 module.exports.User = User;
 module.exports.Payment = Payment;
 
@@ -9,7 +11,7 @@ function User(name, nick, email, notes) {
 }
 
 User.prototype.toString = function() {
-  return [this.name, this.nick, this.email, this.notes].join(', ');
+  return _.compact([this.name, this.nick, this.email, this.notes]).join(', ');
 };
 
 User.prototype.serialize = function() {
