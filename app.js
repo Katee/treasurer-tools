@@ -19,22 +19,23 @@ var options = _.extend({
   email_log: path.join(__dirname, 'data', 'emails.log')
 }, require(path.join(path.dirname(module.filename), 'options')));
 
+module.exports.startRepl = startRepl;
+
 var email_log = fs.createWriteStream(options.email_log, {'flags': 'a'});
 
 var payments = [];
 var users = [];
 
-console.log('Welcome to Treasurer tools');
-// automatically load the payments and users on start
-loadPayments().then(function(value){
-  payments = value;
-});
-loadUsers().then(function(value){
-  users = value;
-});
-startRepl();
-
 function startRepl() {
+  console.log('Welcome to Treasurer tools');
+  // automatically load the payments and users on start
+  loadPayments().then(function(value){
+    payments = value;
+  });
+  loadUsers().then(function(value){
+    users = value;
+  });
+  
   process.stdin.resume();
   process.stdin.setEncoding('utf8');
 
