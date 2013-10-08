@@ -99,15 +99,14 @@ function handleCommandUsers(filter) {
 
 // single payment command lets you add a payment
 function handleCommandPayment(command) {
-  console.log('command: "%s"', command);
-  var paymentRegex = /^(add) (".+"|'.+') (\$[0-9]+\.[0-9]{2}) (cash|cheque|interac|paypal)/;
+  var paymentRegex = /^(add) ([0-9]+\.[0-9]{2}) (cash|cheque|interac|paypal) (".+"|'.+'|[a-zA-Z ]+)/;
   var matches = command.match(paymentRegex);
   if (matches) {
     var action = matches[1];
 
-    var name = matches[2];
-    var amount = matches[3];
-    var method = matches[4];
+    var name = matches[4];
+    var amount = matches[2];
+    var method = matches[3];
     var date = (new Date()).format(options.date_format);
     var notes = null;
 
