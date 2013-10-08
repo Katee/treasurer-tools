@@ -3,4 +3,10 @@
 var path = require('path');
 var app = require(path.join(path.dirname(module.filename), 'app'));
 
-app.startRepl();
+if (process.argv.length > 2) {
+  app.loadData().then(function(){
+    app.dispatchCommand(process.argv.slice(2).join(' '));
+  });
+} else {
+  app.startRepl();
+}

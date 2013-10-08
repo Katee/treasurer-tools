@@ -20,6 +20,8 @@ var options = _.extend({
 }, require(path.join(path.dirname(module.filename), 'options')));
 
 module.exports.startRepl = startRepl;
+module.exports.dispatchCommand = dispatchCommand;
+module.exports.loadData = loadData;
 
 var email_log = fs.createWriteStream(options.email_log, {'flags': 'a'});
 
@@ -27,19 +29,29 @@ var payments = [];
 var users = [];
 
 function startRepl() {
-  console.log('Welcome to Treasurer tools');
-  // automatically load the payments and users on start
-  loadPayments().then(function(value){
-    payments = value;
-  });
-  loadUsers().then(function(value){
-    users = value;
-  });
-  
-  process.stdin.resume();
-  process.stdin.setEncoding('utf8');
+  loadData().then(function(){
+    console.log('Welcome to Treasurer tools, you are now in interactive mode.');
+    process.stdin.resume();
+    process.stdin.setEncoding('utf8');
 
-  process.stdin.on('data', dispatchCommand);
+    process.stdin.on('data', dispatchCommand);
+  });
+}
+
+function loadData() {
+  var deferred = Q.defer();
+
+  // automatically load the payments and users on start
+  Q.allSettled([loadPayments(), loadUsers()]).spread(function(paymentsPromise, usersPromise){
+    payments = paymentsPromise.value;
+    users = usersPromise.value;
+    deferred.resolve(null);
+  }).catch(function(err){
+    deferred.reject();
+    console.log(err);
+  });
+
+  return deferred.promise;
 }
 
 function dispatchCommand(text) {
