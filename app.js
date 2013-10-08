@@ -187,7 +187,7 @@ function loadUsers() {
 
 function filterPayments(filter) {
   return _.filter(payments, function(payment) {
-    return payment.who.toLowerCase().match(filter.toLowerCase());
+    return payment.toString().toLowerCase().match(filter.toLowerCase());
   });
 }
 
