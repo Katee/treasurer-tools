@@ -181,16 +181,7 @@ function loadPayments() {
   return loadFromCSV(options.payments_file, function(line){
     var values = line.split(',');
     if (values == undefined || values.length <= 1 || values[0] == null || values[0].length == 0) {return;}
-    var payment = new Payment(values[1], values[0], values[2] || values[3] || values[4] || values[5], values[6]);
-    if (values[2].length > 0) {
-      payment.type = "cash";
-    } else if (values[3].length > 0) {
-      payment.type = "cheque";
-    } else if (values[4].length > 0) {
-      payment.type = "interac";
-    } else if (values[5].length > 0) {
-      payment.type = "paypal";
-    }
+    var payment = new Payment(values[1], values[0], values[2], values[3], values[4]);
     return payment;
   });
 }
