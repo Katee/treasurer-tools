@@ -37,7 +37,7 @@ process.stdin.resume();
 process.stdin.setEncoding('utf8');
 
 process.stdin.on('data', function (text) {
-  var commandRegex = /^([a-z]+)([a-zA-Z0-9 $."]*)/;
+  var commandRegex = /^([a-z]+)([a-zA-Z0-9 $."']*)/;
   var command = text.match(commandRegex);
   var restOfCommand = command[2].trim();
 
@@ -82,7 +82,7 @@ function handleCommandUsers(filter) {
 // single payment command lets you add a payment
 function handleCommandPayment(command) {
   console.log('command: "%s"', command);
-  var paymentRegex = /^(add) (".+") (\$[0-9]+\.[0-9]{2}) (cash|cheque|interac|paypal)/;
+  var paymentRegex = /^(add) (".+"|'.+') (\$[0-9]+\.[0-9]{2}) (cash|cheque|interac|paypal)/;
   var matches = command.match(paymentRegex);
   if (matches) {
     var action = matches[1];
@@ -97,7 +97,7 @@ function handleCommandPayment(command) {
     payments.push(payment);
     console.log("Adding payment: %s", payment);
   } else {
-    console.log(prettyPrint(payments));
+    console.log("Not sure about : '%s'", command);
   }
 }
 
