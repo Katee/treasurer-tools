@@ -12,6 +12,10 @@ User.prototype.toString = function() {
   return [this.name, this.nick, this.email, this.notes].join(', ');
 };
 
+User.prototype.serialize = function() {
+  return [this.name, this.nick, this.email, this.notes].join(',');
+};
+
 function Payment(who, date, amount, type, notes) {
   this.who = who;
   this.date = date;
@@ -22,4 +26,8 @@ function Payment(who, date, amount, type, notes) {
 
 Payment.prototype.toString = function() {
   return this.date + ": " + this.who + " paid " + this.amount.toFixed(2) + " by " + this.type;
+};
+
+Payment.prototype.serialize = function() {
+  return [this.date, this.who, this.amount.toFixed(2), this.type, this.notes].join(',');
 };
