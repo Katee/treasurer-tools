@@ -171,9 +171,7 @@ function handleCommandEmail(command) {
 
 // show info about a user
 function handleCommandInfo(name) {
-  var filteredUsers = _.filter(users, function(user){
-    return user.name.match(name);
-  });
+  var filteredUsers = findUserFromCommand(name);
 
   if (filteredUsers.length == 0) {
     console.log("No user found matching '%s'", name);
@@ -241,4 +239,11 @@ function filterUsers(filter) {
 
 function prettyPrint(arr) {
   return _.map(arr, function(el){return el.toString();}).join('\n');
+}
+
+function findUserFromCommand(name) {
+  name = name.toLowerCase();
+  return _.filter(users, function(user){
+    return user.name.toLowerCase().match(name) || user.nick.toLowerCase().match(name);
+  });
 }
