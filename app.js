@@ -56,7 +56,8 @@ function loadData() {
 }
 
 function dispatchCommand(text) {
-  var commandRegex = /^([a-z]+)([a-zA-Z0-9 $."']*)/;
+  // TODO proprely tokenize
+  var commandRegex = /^([a-z]+)([a-zA-Z0-9 $."'-]*)/;
   var command = text.match(commandRegex);
   var restOfCommand = command[2].trim();
 
