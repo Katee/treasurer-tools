@@ -9,6 +9,7 @@ A collection of tools to help me be lazy and still get done my tasks as treasure
 
 ## Usage
 
+* `./treasure info name` List all info on a user (or multiple users that match name.)
 * `./treasure payments` List all payments
 * `./treasure payments filter` List all payments that contain the text in 'filter' somewhere in the name, amount, type, date or notes.
 * `./treasure payment add 50.00 cash Katherine Murphy` Create a new payment of $50 of type cash for the user Katherine Murphy.

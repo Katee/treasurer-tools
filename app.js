@@ -73,6 +73,9 @@ function dispatchCommand(text) {
   case "email":
     handleCommandEmail(restOfCommand);
     break;
+  case "info":
+    handleCommandInfo(restOfCommand);
+    break;
   case "quit":
   case "exit":
     console.log('Bye.');
@@ -163,6 +166,33 @@ function handleCommandEmail(command) {
     default:
       console.log("No email type '%s' known.", emailType);
       break;
+  }
+}
+
+// show info about a user
+function handleCommandInfo(name) {
+  var filteredUsers = _.filter(users, function(user){
+    return user.name.match(name);
+  });
+
+  if (filteredUsers.length == 0) {
+    console.log("No user found matching '%s'", name);
+    return;
+  }
+
+  _.each(filteredUsers, showUserInfo);
+}
+
+function showUserInfo(user) {
+  console.log(user.toString());
+
+  var filteredPayments = user.findPayments(payments);
+  if (filteredPayments.length > 0) {
+    console.log(prettyPrint(filteredPayments));
+    // use value method when showing a user's summary so their total reflects the number of months they have covered
+    console.log('%s payments, total value: $%s', filteredPayments.length, _.reduce(filteredPayments, function(m,p){return m + Number(p.value());}, 0).toFixed(2));
+  } else {
+    console.log("No payments found found for %s", user.name);
   }
 }
 

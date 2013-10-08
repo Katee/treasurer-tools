@@ -18,6 +18,13 @@ User.prototype.serialize = function() {
   return [this.name, this.nick, this.email, this.notes].join(',');
 };
 
+User.prototype.findPayments = function(payments) {
+  var user = this;
+  return _.filter(payments, function(payment) {
+    return payment.who === user.name;
+  });
+};
+
 function Payment(who, date, amount, type, notes) {
   this.who = who;
   this.date = date;
