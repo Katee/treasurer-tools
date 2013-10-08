@@ -21,7 +21,14 @@ User.prototype.serialize = function() {
 User.prototype.findPayments = function(payments) {
   var user = this;
   return _.filter(payments, function(payment) {
-    return payment.who === user.name;
+    return payment.who === user.name && !payment.isDonation();
+  });
+};
+
+User.prototype.findDonations = function(payments) {
+  var user = this;
+  return _.filter(payments, function(payment) {
+    return payment.who === user.name && payment.isDonation();
   });
 };
 
@@ -39,6 +46,11 @@ Payment.prototype.value = function() {
     return '50.00';
   }
   return this.amount.toFixed(2);
+};
+
+// pretty hacky way to tell donations from normal payments
+Payment.prototype.isDonation = function() {
+  return this.who === 'DONATIONS' || this.notes.toLowerCase().match('donation') !== null;
 };
 
 Payment.prototype.toString = function() {
