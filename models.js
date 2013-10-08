@@ -24,6 +24,14 @@ function Payment(who, date, amount, type, notes) {
   this.notes = notes;
 }
 
+// paypal payments are slightly more, but the 'value' (to calculate months covered) is only 50
+Payment.prototype.value = function() {
+  if (this.type === 'paypal' && this.amount === 51.75) {
+    return '50.00';
+  }
+  return this.amount.toFixed(2);
+};
+
 Payment.prototype.toString = function() {
   return this.date + ": " + this.who + " paid " + this.amount.toFixed(2) + " by " + this.type;
 };
