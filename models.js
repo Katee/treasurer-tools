@@ -15,11 +15,11 @@ User.prototype.toString = function() {
 function Payment(who, date, amount, type, notes) {
   this.who = who;
   this.date = date;
-  this.amount = amount;
+  this.amount = Number(amount);
   this.type = type;
   this.notes = notes;
 }
 
 Payment.prototype.toString = function() {
-  return this.date + ": " + this.who + " paid " + this.amount + " by " + this.type;
+  return this.date + ": " + this.who + " paid " + this.amount.toFixed(2) + " by " + this.type;
 };
