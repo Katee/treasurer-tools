@@ -109,12 +109,22 @@ function handleCommandPayment(command) {
     var action = matches[1];
 
     var name = matches[4];
+    var selectedUsers = findUserFromCommand(name);
+    if (_.size(selectedUsers) == 0) {
+      console.log("No user found.")
+      return;
+    } else if (_.size(selectedUsers) > 1) {
+      console.log("'%s' could referr to %s", name, _.pluck(selectedUsers, 'name').join(', '));
+      return;
+    }
+    var user = selectedUsers[0];
+
     var amount = matches[2];
     var method = matches[3];
     var date = (new Date()).format(options.date_format);
     var notes = null;
 
-    var payment = new Payment(name, date, amount, method, notes);
+    var payment = new Payment(user.name, date, amount, method, notes);
     payments.push(payment);
     payments_log.write(payment.serialize() + '\n');
     console.log("Added payment: %s", payment);
