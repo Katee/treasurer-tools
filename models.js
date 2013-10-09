@@ -61,3 +61,8 @@ Payment.prototype.toString = function() {
 Payment.prototype.serialize = function() {
   return [this.date, this.who, this.amount.toFixed(2), this.type, this.notes].join(',');
 };
+
+Payment.deserialize = function(serialized) {
+  var values = serialized.split(',');
+  return new Payment(values[1], values[0], values[2], values[3], values[4], values[5]);
+};
