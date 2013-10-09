@@ -1,5 +1,5 @@
-Name,Nick,Email,Notes
-Katherine Murphy,kategeek,hello@kate.io,
-Unnamed Member,unnamed,unnamed@example.com,
-Fake Person,fake,fake@example.com,
-Some Other Lady,other,other@example.com,
+Member,Nick,Email,Notes,Join Date
+Katherine Murphy,kategeek,hello@kate.io,,2011-02-01
+Unnamed Member,unnamed,unnamed@example.com,,2011-04-01
+Fake Person,fake,fake@example.com,,2012-03-01
+Some Other Lady,other,other@example.com,,2012-06-01

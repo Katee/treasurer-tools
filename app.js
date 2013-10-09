@@ -239,7 +239,7 @@ function loadUsers() {
   return loadFromCSV(options.users_file, function(line){
     var values = line.split(',');
     if (values == undefined || values.length <= 1 || values[0] == null || values[0].length == 0) {return;}
-    return new User(values[0], values[1], values[2], values[3]);
+    return new User(values[0], values[1], values[2], values[3], values[4]);
   });
 }
 

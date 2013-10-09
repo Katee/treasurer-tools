@@ -3,19 +3,20 @@ var _ = require('underscore');
 module.exports.User = User;
 module.exports.Payment = Payment;
 
-function User(name, nick, email, notes) {
+function User(name, nick, email, notes, joinDate) {
   this.name = name;
   this.nick = nick;
   this.email = email;
   this.notes = notes;
+  this.joinDate = joinDate;
 }
 
 User.prototype.toString = function() {
-  return _.compact([this.name, this.nick, this.email, this.notes]).join(', ');
+  return _.compact([this.name, this.nick, this.email, this.notes, this.joinDate]).join(', ');
 };
 
 User.prototype.serialize = function() {
-  return [this.name, this.nick, this.email, this.notes].join(',');
+  return [this.name, this.nick, this.email, this.notes, this.joinDate].join(',');
 };
 
 User.prototype.findPayments = function(payments) {
