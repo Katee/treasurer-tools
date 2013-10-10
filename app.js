@@ -5,8 +5,8 @@ var util = require('util');
 var fs = require('fs');
 require('date-format-lite');
 
-var emailer = require(path.join(path.dirname(module.filename), 'emailer'));
-var models = require(path.join(path.dirname(module.filename), 'models'));
+var emailer = require('./emailer');
+var models = require('./models');
 var Payment = models.Payment;
 var User = models.User;
 
@@ -17,7 +17,7 @@ var options = _.extend({
   payments_file: path.join(__dirname, 'data', 'payments.csv'),
   users_file: path.join(__dirname, 'data', 'users.csv'),
   email_log: path.join(__dirname, 'data', 'emails.log')
-}, require(path.join(path.dirname(module.filename), 'options')));
+}, require('./options'));
 
 module.exports.startRepl = startRepl;
 module.exports.dispatchCommand = dispatchCommand;

@@ -1,7 +1,7 @@
 #!/usr/local/bin/node
 
 var path = require('path');
-var app = require(path.join(path.dirname(module.filename), 'app'));
+var app = require('./app');
 
 if (process.argv.length > 2) {
   app.loadData().then(function(){

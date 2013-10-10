@@ -1,7 +1,7 @@
 #!/usr/local/bin/node
 var path = require('path');
-var app = require(path.join(path.dirname(module.filename), 'app'));
-var models = require(path.join(path.dirname(module.filename), 'models'));
+var app = require('./app');
+var models = require('./models');
 var _ = require('underscore');
 var fs = require('fs');
 require('date-format-lite');
