@@ -1,8 +1,10 @@
 <p>Hi <%= user.name %>,</p>
 
-<p>Just a friendly reminder that Hacklab does not have any dues payments on record for you covering the following months:</p>
-<ul>
-<% payments.forEach(function(payment){ %><li><%= payment.date %></li><% }) %>
-</ul>
+<p>Just a friendly reminder that your Hacklab due date was: <strong><%= user.nextDuedate %></strong></p>
 
-<p>Please let us know when you might be able to get up to date with your payment. If you think this notice is an error please let us know.</p>
+<p>Please let us know when you might be able to get up to date with your payment. We accept cash, cheque, interac, paypal and have an <a href="https://hacklab.to/membership/">automated payment</a> option.</p>
+
+<p>If you think this notice is in error please let us know by replying to this email. Your payments on file are:</p>
+<ul>
+<% payments.forEach(function(payment){ %><li><%= payment.date %> of $<%= payment.amount %> by <%= payment.type %></li><% }) %>
+</ul>
