@@ -16,7 +16,8 @@ var options = _.extend({
   email_templates_dir: path.join(__dirname, 'emails'),
   payments_file: path.join(__dirname, 'data', 'payments.csv'),
   users_file: path.join(__dirname, 'data', 'users.csv'),
-  email_log: path.join(__dirname, 'data', 'emails.log')
+  email_log: path.join(__dirname, 'data', 'emails.log'),
+  donation_names: [] // names to treat as donations
 }, require('./options'));
 
 module.exports.startRepl = startRepl;

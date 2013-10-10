@@ -55,6 +55,8 @@ function Payment(who, date, amount, type, notes) {
   this.notes = notes;
 }
 
+Payment.DONATION_NAME = 'DONATIONS';
+
 // paypal payments are slightly more, but the 'value' (to calculate months covered) is only 50
 Payment.prototype.value = function() {
   if (this.type === 'paypal' && this.amount === 51.75) {
@@ -65,7 +67,7 @@ Payment.prototype.value = function() {
 
 // pretty hacky way to tell donations from normal payments
 Payment.prototype.isDonation = function() {
-  return this.who === 'DONATIONS' || this.notes.toLowerCase().match('donation') !== null;
+  return this.who === Payment.DONATION_NAME || this.notes.toLowerCase().match('donation') !== null;
 };
 
 Payment.prototype.toString = function() {
