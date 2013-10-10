@@ -1,4 +1,8 @@
 var _ = require('underscore');
+require('date-format-lite');
+
+var MONTHS_IN_YEAR = 12;
+var start_date = '2012/01/01';
 
 module.exports.User = User;
 module.exports.Payment = Payment;
@@ -31,6 +35,16 @@ User.prototype.findDonations = function(payments) {
   return _.filter(payments, function(payment) {
     return payment.who === user.name && payment.isDonation();
   });
+};
+
+User.prototype.dueDate = function(payments) {
+  var userPayments = this.findPayments(payments);
+  var total = _.reduce(userPayments, function(m,p){return m + Number(p.value());}, 0).toFixed(2);
+  var months_paid = Math.round(total / 50);
+  var d = new Date(start_date);
+  d.setMonth((d.getMonth()) + months_paid % MONTHS_IN_YEAR);
+  d.setFullYear(d.getFullYear() + Math.floor(months_paid / MONTHS_IN_YEAR));
+  return d;
 };
 
 function Payment(who, date, amount, type, notes) {

@@ -167,9 +167,16 @@ function handleCommandEmail(command) {
   }
   var emailType = matches[1];
   var name = matches[2];
-  var user = _.find(users, function(user){
-    return user.name.match(name);
-  });
+  var users = findUserFromCommand(name);
+  if (users.length > 1) {
+    console.log("No user found with '%s'", name);
+    return;
+  } if (users.length < 1) {
+    console.log("More than one user found with '%s'", name);
+    return;
+  }
+  var user = users[0];
+  user.nextDuedate = user.dueDate(payments).format(options.date_format);
   var filteredPayments = filterPayments(name);
   switch(emailType) {
     case "reminder":
@@ -205,6 +212,7 @@ function showUserInfo(user) {
 
   var filteredPayments = user.findPayments(payments);
   var filteredDonations = user.findDonations(payments);
+  console.log('Due date: %s', user.dueDate(payments).format(options.date_format));
 
   if (_.size(filteredPayments) > 0) {
     console.log(prettyPrint(filteredPayments));
