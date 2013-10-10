@@ -2,12 +2,12 @@ var Q = require('q');
 var nodemailer = require("nodemailer");
 var emailTemplates = require('email-templates');
 
-var sendReminderEmail = function(email, userInformation, paymentsInformation, options, callback) {
-  sendEmail(email, {user: userInformation, payments: paymentsInformation}, 'Hacklab Dues Reminder', 'reminder', options, callback);
+var sendReminderEmail = function(email, userInformation, paymentsInformation, options) {
+  return sendEmail(email, {user: userInformation, payments: paymentsInformation}, 'Hacklab Dues Reminder', 'reminder', options);
 };
 
-var sendReceiptEmail = function(email, userInformation, paymentInformation, payments, options, callback) {
-  sendEmail(email, {user: userInformation, payment: paymentInformation, payments: payments}, 'Hacklab Dues Receipt', 'receipt', options, callback);
+var sendReceiptEmail = function(email, userInformation, paymentInformation, payments, options) {
+  return sendEmail(email, {user: userInformation, payment: paymentInformation, payments: payments}, 'Hacklab Dues Receipt', 'receipt', options);
 };
 
 module.exports.sendReminderEmail = sendReminderEmail;
@@ -15,6 +15,7 @@ module.exports.sendReceiptEmail = sendReceiptEmail;
 
 function sendEmail(email, templateData, subject, templateName, options, callback) {
   var transport = makeTransport(options);
+  var deferred = Q.defer();
 
   Q.nfcall(emailTemplates, options.email_templates_dir).then(function(template){
     return Q.nfcall(template, templateName, templateData);
@@ -28,14 +29,14 @@ function sendEmail(email, templateData, subject, templateName, options, callback
     });
   }).then(function(responseStatus){
     console.log(responseStatus.message);
-  }).then(function(){
-    console.log('%s sent to %s', subject, email);
+    deferred.resolve({subject: subject, email: email});
     transport.close();
-  }).then(function(){
-    if (callback) callback(null, subject, email);
-  }, function(err){
+  }).catch(function(err){
     console.log(err);
+    deferred.reject(err);
   }).done();
+
+  return deferred.promise;
 }
 
 function makeTransport(options) {

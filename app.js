@@ -179,21 +179,24 @@ function handleCommandEmail(command) {
   var user = users[0];
   user.nextDuedate = user.dueDate(payments).format(options.date_format);
   var filteredPayments = filterPayments(name);
+  var emailPromise;
   switch(emailType) {
     case "reminder":
-      emailer.sendReminderEmail(user.email, user, filteredPayments, options, function(error, subject, email){
-        email_log.write((new Date).getTime() + " email reminder sent to " + email + '\n');
-      });
+      emailPromise = emailer.sendReminderEmail(user.email, user, filteredPayments, options);
       break;
     case "receipt":
-      emailer.sendReceiptEmail(user.email, user, _.last(filteredPayments), filteredPayments, options, function(error, subject, email){
-        email_log.write((new Date).getTime() + " email reminder sent to " + email + '\n');
-      });
+      emailPromise = emailer.sendReceiptEmail(user.email, user, _.last(filteredPayments), filteredPayments, options);
       break;
     default:
       console.log("No email type '%s' known.", emailType);
-      break;
+      return;
   }
+
+  emailPromise.then(function(emailDetails){
+    var message = (new Date).getTime() + ": " + emailDetails.subject + " sent to " + emailDetails.email + '\n';
+    console.log(message);
+    email_log.write(message);
+  });
 }
 
 // show info about a user
