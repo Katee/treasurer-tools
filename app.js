@@ -22,12 +22,18 @@ var options = _.extend({
 module.exports.startRepl = startRepl;
 module.exports.dispatchCommand = dispatchCommand;
 module.exports.loadData = loadData;
+module.exports.loadFromCSV = loadFromCSV;
+module.exports.options = options;
+module.exports.models = models;
+
+var payments = [];
+var users = module.exports.users = [];
+
+module.exports.payments = payments;
+module.exports.users = users;
 
 var email_log = fs.createWriteStream(options.email_log, {'flags': 'a'});
 var payments_log = fs.createWriteStream(options.payments_file, {'flags': 'a'});
-
-var payments = [];
-var users = [];
 
 function startRepl() {
   loadData().then(function(){
@@ -46,6 +52,8 @@ function loadData() {
   Q.allSettled([loadPayments(), loadUsers()]).spread(function(paymentsPromise, usersPromise){
     payments = paymentsPromise.value;
     users = usersPromise.value;
+    module.exports.payments = payments;
+    module.exports.users = users;
     deferred.resolve(null);
   }).catch(function(err){
     deferred.reject();
