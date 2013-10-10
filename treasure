@@ -3,10 +3,14 @@
 var path = require('path');
 var app = require('./app');
 
-if (process.argv.length > 2) {
-  app.loadData().then(function(){
+app.loadData().then(function(){
+  if (process.argv.length > 2) {
     app.dispatchCommand(process.argv.slice(2).join(' '));
-  });
-} else {
-  app.startRepl();
-}
+  } else {
+    console.log('Welcome to Treasurer tools, you are now in interactive mode.');
+    process.stdin.resume();
+    process.stdin.setEncoding('utf8');
+
+    process.stdin.on('data', app.dispatchCommand);
+  }
+});

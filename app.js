@@ -20,7 +20,6 @@ var options = _.extend({
   donation_names: [] // names to treat as donations
 }, require('./options'));
 
-module.exports.startRepl = startRepl;
 module.exports.dispatchCommand = dispatchCommand;
 module.exports.loadData = loadData;
 module.exports.loadFromCSV = loadFromCSV;
@@ -35,16 +34,6 @@ module.exports.users = users;
 
 var email_log = fs.createWriteStream(options.email_log, {'flags': 'a'});
 var payments_log = fs.createWriteStream(options.payments_file, {'flags': 'a'});
-
-function startRepl() {
-  loadData().then(function(){
-    console.log('Welcome to Treasurer tools, you are now in interactive mode.');
-    process.stdin.resume();
-    process.stdin.setEncoding('utf8');
-
-    process.stdin.on('data', dispatchCommand);
-  });
-}
 
 function loadData() {
   var deferred = Q.defer();
