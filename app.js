@@ -171,7 +171,7 @@ function handleCommandEmail(command) {
   }
   var user = users[0];
   user.nextDuedate = user.dueDate(payments).format(options.date_format);
-  var filteredPayments = filterPayments(name);
+  var filteredPayments = user.findPayments(payments);
   var emailPromise;
   switch(emailType) {
     case "reminder":
