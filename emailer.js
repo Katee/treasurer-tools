@@ -25,7 +25,7 @@ function sendEmail(email, templateData, subject, templateName, options, callback
       to: email,
       subject: subject,
       html: template[0],
-      text: template[1]
+      generateTextFromHTML: true
     });
   }).then(function(responseStatus){
     console.log(responseStatus.message);
