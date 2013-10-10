@@ -7,6 +7,7 @@ require('date-format-lite');
 
 var emailer = require('./emailer');
 var models = require('./models');
+var importer = require('./import');
 var Payment = models.Payment;
 var User = models.User;
 
@@ -74,6 +75,9 @@ function dispatchCommand(text) {
     break;
   case "info":
     handleCommandInfo(restOfCommand);
+    break;
+  case "import":
+    handleCommandImport(restOfCommand);
     break;
   case "quit":
   case "exit":
@@ -198,6 +202,10 @@ function handleCommandInfo(name) {
   }
 
   _.each(filteredUsers, showUserInfo);
+}
+
+function handleCommandImport(filename) {
+  importer.importPaypalPayments(payments, filename);
 }
 
 function showUserInfo(user) {

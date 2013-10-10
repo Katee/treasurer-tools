@@ -16,7 +16,7 @@ A collection of tools to help me be lazy and still get done my tasks as treasure
 * `./treasure users` List all users
 * `./treasure users filter` List all users that contain the text in 'filter' somewhere in the name, email, nick or notes.
 * `./treasure email [receipt|reminder] user` send a reminder or receipt email to user.
-* `./paypal-import paypal.csv` Imports any *new* payments from paypal.csv, will print error messages for any unknown members
+* `./treasure import paypal.csv` Imports any *new* payments from paypal.csv, will print error messages for any unknown members
 
 ## Setup
 

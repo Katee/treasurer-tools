@@ -1,5 +1,3 @@
-#!/usr/local/bin/node
-
 var path = require('path');
 var Q = require('q');
 var app = require('./app');
@@ -9,35 +7,37 @@ var fs = require('fs');
 require('date-format-lite');
 Date.middle_endian = true; // to match paypal date format
 
-if (process.argv.length > 2) {
-  var filename = path.join(__dirname, process.argv.slice(2)[0]);
+var ignore_names = ['Bank Account', 'From U.S. Dollar', 'To Canadian Dollar', 'From Singapore Dollar'];
 
-  app.loadData().then(function(){
-    // get all payments from our new file
-    return getPaymentsFromPaypalExport(filename);
-  }).then(function(importPayments){
-    // get the old paypal payments from the file and serialize them for later comparison
-    var oldPaypalPaymentsSerialized = _.chain(app.payments).filter(isPaypalPayment).map(serialize).value();
+module.exports.importPaypalPayments = importPaypalPayments;
 
-    // serialize the potentially new paymets
-    var importPaymentsSerialized = _.map(importPayments, serialize);
-
-    // find the payments in the paypal csv file that do not exist in the payments file
-    var newPaypalPaymentsSerialized = _.difference(importPaymentsSerialized, oldPaypalPaymentsSerialized);
-    var newPaypalPayments = _.map(newPaypalPaymentsSerialized, function(a){return models.Payment.deserialize(a);});
-
-    // add our payments to the existing ones and make sure they are sorted by date
-    var mergedPayments = _.sortBy(_.union(app.payments, newPaypalPayments), function(a){return a.date;});
-
+function importPaypalPayments(oldPayments, csvFilename) {
+  getPaymentsFromPaypalExport(csvFilename).then(function(importPayments){
+    return collatePayments(oldPayments, importPayments);
+  }).then(function(newPayments){
     // overwrite old payments file with our new one
-    savePayments(mergedPayments, app.options.payments_file);
-
-    console.log("Added %s new payments from %s", newPaypalPayments.length, filename);
+    savePayments(newPayments, app.options.payments_file);
+    console.log("Added %s new payments", newPayments.length - oldPayments.length);
   }).catch(function(err){
     console.log(err);
   });
-} else {
-  console.log("No file selected");
+}
+
+function collatePayments(oldPayments, newPayments) {
+  // get the old paypal payments from the file and serialize them for later comparison
+  var oldPaypalPaymentsSerialized = _.chain(oldPayments).filter(isPaypalPayment).map(serialize).value();
+
+  // serialize the potentially new paymets
+  var importPaymentsSerialized = _.map(newPayments, serialize);
+
+  // find the payments in the paypal csv file that do not exist in the payments file
+  var newPaypalPaymentsSerialized = _.difference(importPaymentsSerialized, oldPaypalPaymentsSerialized);
+  var newPaypalPayments = _.map(newPaypalPaymentsSerialized, function(a){return models.Payment.deserialize(a);});
+
+  // add our payments to the existing ones and make sure they are sorted by date
+  var mergedPayments = _.sortBy(_.union(oldPayments, newPaypalPayments), function(a){return a.date;});
+
+  return mergedPayments;
 }
 
 function getPaymentsFromPaypalExport(filename) {
@@ -54,9 +54,11 @@ function getPaymentsFromPaypalExport(filename) {
     var notes = values[12].replace(/"/g, '');
 
     if (user.length !== 1) {
-      if (_.contains(app.options.donation_names, name)) {
+      // 13.37 is the amount for 'friends of hacklab' donations
+      if (_.contains(app.options.donation_names, name) || amount == 13.37) {
         user = {name: models.Payment.DONATION_NAME};
       } else {
+        if (!_.contains(ignore_names, name))
         console.log("Error: could not find user for '%s' on line %s", name, lineNumber);
         return;
       }
