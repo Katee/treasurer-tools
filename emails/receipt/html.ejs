@@ -3,7 +3,7 @@
 <p>Hacklab received your payment of $<%= payment.value() %> by <%= payment.type %><br />
 Your next due date is: <strong><%= user.nextDuedate %></strong></p>
 
-<p>Your payments on file are:</p>
+<p>Your payments on file since 01/01/2012 are:</p>
 <ul>
 <% payments.forEach(function(payment){ %><li><%= payment.date %> of $<%= payment.amount %> by <%= payment.type %></li><% }) %>
 </ul>

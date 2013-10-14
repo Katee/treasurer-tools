@@ -4,7 +4,7 @@
 
 <p>Please let us know when you might be able to get up to date with your payment. We accept cash, cheque, interac, paypal and have an <a href="https://hacklab.to/membership/">automated payment</a> option.</p>
 
-<p>If you think this notice is in error please let us know by replying to this email. Your payments on file are:</p>
+<p>If you think this notice is in error please let us know by replying to this email. Your payments on file since 01/01/2012 are:</p>
 <ul>
 <% payments.forEach(function(payment){ %><li><%= payment.date %> of $<%= payment.amount %> by <%= payment.type %></li><% }) %>
 </ul>
