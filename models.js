@@ -41,9 +41,10 @@ User.prototype.dueDate = function(payments) {
   var userPayments = this.findPayments(payments);
   var total = _.reduce(userPayments, function(m,p){return m + Number(p.value());}, 0).toFixed(2);
   var months_paid = Math.round(total / 50);
-  var d = new Date(start_date);
-  d.setMonth((d.getMonth()) + months_paid % MONTHS_IN_YEAR);
-  d.setFullYear(d.getFullYear() + Math.floor(months_paid / MONTHS_IN_YEAR));
+  var d = new Date(this.joinDate || start_date);
+  console.log(d);
+  d.setMonth((d.getUTCMonth()) + months_paid % MONTHS_IN_YEAR);
+  d.setFullYear(d.getUTCFullYear() + Math.floor(months_paid / MONTHS_IN_YEAR));
   return d;
 };
 
