@@ -153,7 +153,7 @@ function handleCommandPayments(filter) {
 
 // find user and send email
 function handleCommandEmail(command) {
-  var emailCommandRegex = /^(reminder|receipt|.+) ([a-zA-Z ]+)/;
+  var emailCommandRegex = /^(reminder|receipt|welcome|.+) ([a-zA-Z ]+)/;
   matches = command.match(emailCommandRegex);
   if (!matches) {
     console.log("Not a valid email command.");
@@ -179,6 +179,9 @@ function handleCommandEmail(command) {
       break;
     case "receipt":
       emailPromise = emailer.sendReceiptEmail(user.email, user, _.last(filteredPayments), filteredPayments, options);
+      break;
+    case "welcome":
+      emailPromise = emailer.sendWelcomeEmail(user.email, user, options);
       break;
     default:
       console.log("No email type '%s' known.", emailType);

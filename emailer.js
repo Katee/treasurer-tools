@@ -10,8 +10,13 @@ var sendReceiptEmail = function(email, userInformation, paymentInformation, paym
   return sendEmail(email, {user: userInformation, payment: paymentInformation, payments: payments}, 'Hacklab Dues Receipt', 'receipt', options);
 };
 
+var sendWelcomeEmail = function(email, userInformation, options) {
+  return sendEmail(email, {user: userInformation}, 'Welcome to Hacklab', 'welcome', options);
+};
+
 module.exports.sendReminderEmail = sendReminderEmail;
 module.exports.sendReceiptEmail = sendReceiptEmail;
+module.exports.sendWelcomeEmail = sendWelcomeEmail;
 
 function sendEmail(email, templateData, subject, templateName, options, callback) {
   var transport = makeTransport(options);
